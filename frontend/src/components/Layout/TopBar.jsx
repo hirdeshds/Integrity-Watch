@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { dashboardStats } from '../../data/mockData';
 import { ShieldIcon, BellIcon, ClockIcon } from '../common/Icons';
+import HelpModal from '../common/HelpModal';
 import './TopBar.css';
 
 export default function TopBar() {
   const countdown = dashboardStats.examCountdown;
   const countdownBadgeClass = countdown <= 1 ? 'badge-critical' : countdown <= 3 ? 'badge-high' : 'badge-info';
+  const [currentRole, setCurrentRole] = useState('Investigator');
+  const [showHelp, setShowHelp] = useState(false);
 
   return (
     <header className="topbar">
@@ -27,25 +31,46 @@ export default function TopBar() {
           <span className="badge badge-low">
             <span className="dot dot-green" /> System Active
           </span>
-          <span className="topbar-meta hide-mobile">
-            {dashboardStats.totalAssets.toLocaleString()} Custody Assets Monitored
+          <span className="badge badge-purple hide-mobile">
+            MFA TOTP Verified
           </span>
         </div>
       </div>
 
       <div className="topbar-right">
+        {/* Help Docs Trigger */}
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowHelp(true)} title="System Documentation & Help">
+          ? Help Guide
+        </button>
+
+        {/* Role Switcher */}
+        <select
+          value={currentRole}
+          onChange={e => setCurrentRole(e.target.value)}
+          className="role-selector"
+          title="Switch Active RBAC Role"
+        >
+          <option value="Investigator">Role: Investigator (Mehak)</option>
+          <option value="Admin">Role: System Admin</option>
+          <option value="Auditor">Role: Legal Auditor</option>
+          <option value="Viewer">Role: View-Only Observer</option>
+        </select>
+
         <button className="topbar-icon-btn" title="Alert Notifications" aria-label="Notifications">
           <BellIcon size={16} />
           <span className="notification-count">3</span>
         </button>
+
         <div className="topbar-user">
           <div className="avatar">MK</div>
           <div className="user-details">
             <span className="user-name">Mehak</span>
-            <span className="user-role">Sr. Investigator</span>
+            <span className="user-role">{currentRole}</span>
           </div>
         </div>
       </div>
+
+      <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
     </header>
   );
 }

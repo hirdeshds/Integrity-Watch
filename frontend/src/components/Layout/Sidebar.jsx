@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { DashboardIcon, BellIcon, MapIcon, GraphIcon, AnalyticsIcon, AuditIcon, ShieldIcon } from '../common/Icons';
+import { DashboardIcon, BellIcon, MapIcon, GraphIcon, AnalyticsIcon, AuditIcon, ShieldIcon, PackageIcon } from '../common/Icons';
 import './Sidebar.css';
 
 const navGroups = [
@@ -8,15 +8,17 @@ const navGroups = [
     items: [
       { path: '/', icon: <DashboardIcon size={16} />, label: 'Dashboard' },
       { path: '/alerts', icon: <BellIcon size={16} />, label: 'Alert Queue', badge: 3 },
-      { path: '/custody', icon: <MapIcon size={16} />, label: 'Custody Tracking' },
+      { path: '/custody', icon: <MapIcon size={16} />, label: 'Offline Custody' },
+      { path: '/online', icon: <PackageIcon size={16} />, label: 'Online Activity' },
     ]
   },
   {
-    title: 'INTELLIGENCE & AUDIT',
+    title: 'INTELLIGENCE & ADMIN',
     items: [
       { path: '/graph', icon: <GraphIcon size={16} />, label: 'Collusion Graph' },
       { path: '/analytics', icon: <AnalyticsIcon size={16} />, label: 'System Analytics' },
       { path: '/audit', icon: <AuditIcon size={16} />, label: 'Audit Trail' },
+      { path: '/admin', icon: <ShieldIcon size={16} />, label: 'Admin Panel' },
     ]
   }
 ];

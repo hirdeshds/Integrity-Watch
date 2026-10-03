@@ -1,0 +1,30 @@
+.action-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.target-info {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-root);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+}
+
+.reason-textarea {
+  width: 100%;
+  resize: vertical;
+  background: var(--bg-root);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}

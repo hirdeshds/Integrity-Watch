@@ -1,0 +1,29 @@
+.help-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.help-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.help-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: var(--space-md);
+  margin-top: 4px;
+}

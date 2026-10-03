@@ -1,7 +1,9 @@
-import { useParams, useNavigate } from 'react';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { alerts, timelineEvents } from '../../data/mockData';
 import RiskGauge from '../common/RiskGauge';
 import { LockIcon, CheckIcon, ShieldIcon } from '../common/Icons';
+import ActionModal from '../common/ActionModal';
 import './AlertDetail.css';
 
 export default function AlertDetail() {
@@ -10,6 +12,20 @@ export default function AlertDetail() {
   const alert = alerts.find(a => a.id === id) || alerts[0];
   const relatedEvents = id === 'ALT-001' ? timelineEvents : [];
   const maxPoints = Math.max(...alert.scoreBreakdown.map(s => s.points));
+
+  const [modalState, setModalState] = useState({ isOpen: false, type: '', target: '' });
+  const [evidenceTab, setEvidenceTab] = useState('timeline');
+  const [identityRevealed, setIdentityRevealed] = useState(false);
+
+  const handleActionClick = (type, target) => {
+    setModalState({ isOpen: true, type, target });
+  };
+
+  const handleActionSubmit = (actionData) => {
+    alert.auditTrail = alert.auditTrail || [];
+    alert.auditTrail.push(actionData);
+    alert.status = actionData.actionType === 'Escalate' ? 'Escalated' : actionData.actionType === 'Dismiss' ? 'Dismissed' : 'Under Review';
+  };
 
   return (
     <div className="alert-detail animate-fade-in">
@@ -24,6 +40,7 @@ export default function AlertDetail() {
               <span className={`badge badge-${alert.severity}`}>{alert.severity} THREAT</span>
               <span className="text-mono text-tertiary">{alert.id}</span>
               <span className="badge badge-purple">{alert.channelType || 'HYBRID'}</span>
+              <span className="badge badge-info">SLA Review: 46m Remaining</span>
             </div>
             <h1 className="text-h1" style={{ marginTop: 4 }}>{alert.title}</h1>
             <div className="banner-sub text-secondary">
@@ -38,45 +55,102 @@ export default function AlertDetail() {
       <div className="card analysis-section">
         <div className="analysis-header">
           <h2 className="text-h3">Correlation Analysis & Rationale</h2>
-          <span className="badge badge-info">Model Confidence: 94.2%</span>
+          <div className="analysis-actions">
+            {!identityRevealed ? (
+              <button className="btn btn-destructive btn-sm" onClick={() => handleActionClick('Reveal Identity', 'Employee_4521')}>
+                Threshold Crossed: Reveal Identity (Audited)
+              </button>
+            ) : (
+              <span className="badge badge-critical">Identity Unlocked: Employee_4521 (Rajesh K.)</span>
+            )}
+          </div>
         </div>
         <p className="analysis-text">{alert.aiExplanation}</p>
       </div>
 
+      {/* Interactive Evidence Attachments & Action Buttons */}
+      <div className="card evidence-bar">
+        <div className="evidence-tabs">
+          <button className={`filter-tab ${evidenceTab === 'timeline' ? 'active' : ''}`} onClick={() => setEvidenceTab('timeline')}>
+            Correlated Event Chain
+          </button>
+          <button className={`filter-tab ${evidenceTab === 'logs' ? 'active' : ''}`} onClick={() => setEvidenceTab('logs')}>
+            Raw Telemetry Logs
+          </button>
+          <button className={`filter-tab ${evidenceTab === 'screenshots' ? 'active' : ''}`} onClick={() => setEvidenceTab('screenshots')}>
+            DRM Screenshot Trail
+          </button>
+        </div>
+        <div className="action-buttons-group">
+          <button className="btn btn-secondary btn-sm" onClick={() => handleActionClick('Request Info', alert.id)}>
+            Request More Info
+          </button>
+          <button className="btn btn-destructive btn-sm" onClick={() => handleActionClick('Escalate', alert.id)}>
+            Escalate Incident
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={() => handleActionClick('Dismiss', alert.id)}>
+            Dismiss Alert (Reason Required)
+          </button>
+        </div>
+      </div>
+
       {/* 3-Column Detail Grid */}
       <div className="detail-grid">
-        {/* Column 1: Chronological Event Sequence */}
+        {/* Column 1: Evidence Tab Content */}
         <div className="card detail-panel">
           <div className="panel-title-bar">
-            <h3 className="text-h3">Correlated Audit Chain</h3>
-            <span className="text-caption">{relatedEvents.length} Events</span>
+            <h3 className="text-h3">Evidence Attachments</h3>
+            <span className="text-caption">{evidenceTab.toUpperCase()}</span>
           </div>
-          {relatedEvents.length > 0 ? (
-            <div className="detail-timeline">
-              {relatedEvents.map((evt, i) => (
-                <div key={evt.id} className="dt-item">
-                  <div className="dt-dot-col">
-                    <div className="dt-dot" style={{ background: evt.channel === 'offline' ? 'var(--channel-offline)' : 'var(--channel-online)' }} />
-                    {i < relatedEvents.length - 1 && <div className="dt-line" />}
-                  </div>
-                  <div className="dt-content">
-                    <div className="dt-header">
-                      <span className="text-mono text-caption">{evt.timestamp}</span>
-                      <span className={`channel-badge channel-${evt.channel}`}>{evt.channel}</span>
+
+          {evidenceTab === 'timeline' && (
+            relatedEvents.length > 0 ? (
+              <div className="detail-timeline">
+                {relatedEvents.map((evt, i) => (
+                  <div key={evt.id} className="dt-item">
+                    <div className="dt-dot-col">
+                      <div className="dt-dot" style={{ background: evt.channel === 'offline' ? 'var(--channel-offline)' : 'var(--channel-online)' }} />
+                      {i < relatedEvents.length - 1 && <div className="dt-line" />}
                     </div>
-                    <strong className="dt-title">{evt.title}</strong>
-                    <p className="text-caption">{evt.subtitle}</p>
-                    <span className="text-mono text-caption text-tertiary" style={{ display: 'block', marginTop: 2 }}>
-                      Source: {evt.source}
-                    </span>
+                    <div className="dt-content">
+                      <div className="dt-header">
+                        <span className="text-mono text-caption">{evt.timestamp}</span>
+                        <span className={`channel-badge channel-${evt.channel}`}>{evt.channel}</span>
+                      </div>
+                      <strong className="dt-title">{evt.title}</strong>
+                      <p className="text-caption">{evt.subtitle}</p>
+                      <span className="text-mono text-caption text-tertiary" style={{ display: 'block', marginTop: 2 }}>
+                        Source: {evt.source}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            ) : (
+              <p className="text-secondary text-caption" style={{ padding: '16px 0' }}>
+                No secondary cross-channel events detected.
+              </p>
+            )
+          )}
+
+          {evidenceTab === 'logs' && (
+            <div className="raw-log-container text-mono text-caption">
+              <div>[2026-10-03 23:45:12] GPS_SENTINEL BOX-7789 Route Deviation +4.2km</div>
+              <div>[2026-10-03 23:47:04] CUSTODY_SENSOR BOX-7789 Tamper Seal BROKEN</div>
+              <div>[2026-10-03 23:53:18] AUTH_GATEWAY User Employee_4521 SSO Token Issued (Off-hours)</div>
+              <div>[2026-10-03 23:54:02] DRM_AGENT User Employee_4521 Download Physics_Paper_Final_v3.pdf</div>
+              <div>[2026-10-03 23:55:10] ENDPOINT_AGENT Screen Capture API Call Intercepted (Process ID #4491)</div>
             </div>
-          ) : (
-            <p className="text-secondary text-caption" style={{ padding: '16px 0' }}>
-              No secondary cross-channel events detected for this alert record.
-            </p>
+          )}
+
+          {evidenceTab === 'screenshots' && (
+            <div className="screenshot-trail">
+              <div className="screenshot-placeholder card text-caption">
+                <strong>DRM Screen Intercept Event #001</strong>
+                <p className="text-tertiary">Captured at 11:55:10 PM during active document view of Physics_Paper_Final_v3.pdf</p>
+                <span className="badge badge-critical" style={{ marginTop: 6 }}>Anonymized Access Watermark Active</span>
+              </div>
+            </div>
           )}
         </div>
 
@@ -154,7 +228,11 @@ export default function AlertDetail() {
                   </div>
                 </div>
               </div>
-              <button className="btn btn-primary btn-sm" style={{ marginTop: 12, width: '100%' }}>
+              <button
+                className="btn btn-primary btn-sm"
+                style={{ marginTop: 12, width: '100%' }}
+                onClick={() => handleActionClick('Approve Intervention Plan', alert.id)}
+              >
                 Authorize Mitigation Plan
               </button>
             </div>
@@ -165,6 +243,18 @@ export default function AlertDetail() {
           </div>
         </div>
       </div>
+
+      {/* Mandatory Reason Modal */}
+      <ActionModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ isOpen: false, type: '', target: '' })}
+        onSubmit={(data) => {
+          if (modalState.type === 'Reveal Identity') setIdentityRevealed(true);
+          handleActionSubmit(data);
+        }}
+        actionType={modalState.type}
+        targetName={modalState.target}
+      />
     </div>
   );
 }

@@ -59,16 +59,19 @@
   gap: var(--space-md);
 }
 
-.topbar-meta {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  font-family: var(--font-mono);
-}
-
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
+}
+
+.role-selector {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--bg-root);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
 }
 
 .topbar-icon-btn {
@@ -111,7 +114,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding-left: var(--space-sm);
+  padding-left: var(--space-xs);
 }
 
 .avatar {
@@ -153,10 +156,7 @@
 }
 
 @media (max-width: 640px) {
-  .topbar-meta {
-    display: none;
-  }
-  .user-role {
+  .user-role, .role-selector {
     display: none;
   }
 }
