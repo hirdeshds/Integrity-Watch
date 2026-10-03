@@ -4,10 +4,9 @@ import { ShieldIcon, BellIcon, ClockIcon } from '../common/Icons';
 import HelpModal from '../common/HelpModal';
 import './TopBar.css';
 
-export default function TopBar() {
+export default function TopBar({ user, onSignOut }) {
   const countdown = dashboardStats.examCountdown;
   const countdownBadgeClass = countdown <= 1 ? 'badge-critical' : countdown <= 3 ? 'badge-high' : 'badge-info';
-  const [currentRole, setCurrentRole] = useState('Investigator');
   const [showHelp, setShowHelp] = useState(false);
 
   return (
@@ -43,31 +42,31 @@ export default function TopBar() {
           ? Help Guide
         </button>
 
-        {/* Role Switcher */}
-        <select
-          value={currentRole}
-          onChange={e => setCurrentRole(e.target.value)}
-          className="role-selector"
-          title="Switch Active RBAC Role"
-        >
-          <option value="Investigator">Role: Investigator (Mehak)</option>
-          <option value="Admin">Role: System Admin</option>
-          <option value="Auditor">Role: Legal Auditor</option>
-          <option value="Viewer">Role: View-Only Observer</option>
-        </select>
-
         <button className="topbar-icon-btn" title="Alert Notifications" aria-label="Notifications">
           <BellIcon size={16} />
           <span className="notification-count">3</span>
         </button>
 
+        {/* User Profile */}
         <div className="topbar-user">
-          <div className="avatar">MK</div>
+          <div className="avatar">
+            {user?.role === 'Admin' ? 'AD' : user?.role === 'Auditor' ? 'AU' : user?.role === 'Viewer' ? 'VW' : 'MK'}
+          </div>
           <div className="user-details">
-            <span className="user-name">Mehak</span>
-            <span className="user-role">{currentRole}</span>
+            <span className="user-name">{user?.role === 'Investigator' ? 'Mehak' : user?.email?.split('@')[0] || 'User'}</span>
+            <span className="user-role">{user?.role || 'Investigator'}</span>
           </div>
         </div>
+
+        {/* Sign Out Trigger */}
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={onSignOut}
+          title="Sign Out of Session"
+          style={{ color: 'var(--text-tertiary)' }}
+        >
+          Sign Out
+        </button>
       </div>
 
       <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
