@@ -1,0 +1,121 @@
+.alert-queue-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.alert-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.alert-count-pill {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.queue-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+}
+
+.queue-search {
+  flex: 1;
+  max-width: 450px;
+}
+
+.severity-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.sev-tab {
+  padding: 5px 12px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.sev-tab.active, .sev-tab:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.alert-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-xl);
+  align-items: center;
+  cursor: pointer;
+  border-left-width: 4px;
+  transition: border-color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+}
+
+.alert-row:hover {
+  background: var(--bg-elevated);
+}
+
+.alert-row.severity-critical { border-left-color: var(--risk-critical); }
+.alert-row.severity-high { border-left-color: var(--risk-high); }
+.alert-row.severity-medium { border-left-color: var(--risk-medium); }
+.alert-row.severity-low { border-left-color: var(--risk-low); }
+
+.alert-meta-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.alert-id {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.alert-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--text-primary);
+}
+
+.alert-desc {
+  font-size: 13px;
+  margin-bottom: var(--space-sm);
+  line-height: 1.4;
+}
+
+.alert-meta-bottom {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.alert-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-2xl);
+}
